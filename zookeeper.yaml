@@ -6,12 +6,12 @@ metadata:
   name: zookeeper-service
   namespace:
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - name: zookeeper-port
       port: 2181
-      nodePort:
-      targetPort: 2183
+      nodePort: 30182
+      targetPort: 2181
   selector:
     app: zookeeper
 ---
@@ -37,7 +37,7 @@ spec:
           imagePullPolicy: IfNotPresent
           name: zookeeper
           ports:
-            - containerPort: 2183
+            - containerPort: 2181
           livenessProbe:
             exec:
               command: [ '/bin/bash', '-c', 'echo "ruok" | nc -w 2 localhost 2181 | grep imok' ]
@@ -46,7 +46,6 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 6
             successThreshold: 1
-
           readinessProbe:
             exec:
               command: [ '/bin/bash', '-c', 'echo "ruok" | nc -w 2 localhost 2181 | grep imok' ]
